@@ -33,9 +33,10 @@ def _notify_stream_qt(kernel, stream):
         # due to our consuming of the edge-triggered FD
         # flush returns the number of events consumed.
         # if there were any, wake it up
-        if stream.flush(limit=1):
-            notifier.setEnabled(False)
-            kernel.app.quit()
+        kernel.do_one_iteration
+        # if stream.flush(limit=1):
+        #     notifier.setEnabled(False)
+        #     kernel.app.quit()
 
     fd = stream.getsockopt(zmq.FD)
     notifier = QtCore.QSocketNotifier(fd, QtCore.QSocketNotifier.Read, kernel.app)
@@ -51,6 +52,10 @@ def _notify_stream_qt(kernel, stream):
     timer.setSingleShot(True)
     timer.timeout.connect(process_stream_events)
     timer.start(0)
+
+    timer2 = QtCore.QTimer(kernel.app)
+    timer2.timeout.connect(process_stream_events)
+    timer2.start(1000*kernel._poll_interval)
 
 # mapping of keys to loop functions
 loop_map = {

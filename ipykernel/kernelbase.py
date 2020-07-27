@@ -803,7 +803,8 @@ class Kernel(SingletonConfigurable):
     @gen.coroutine
     def _dispatch_abort(self):
         self.log.info("Finishing abort")
-        yield gen.sleep(self.stop_on_error_timeout)
+        #yield gen.sleep(self.stop_on_error_timeout)
+        time.sleep(self.stop_on_error_timeout)
         self._aborting = False
 
     def _send_abort_reply(self, stream, msg, idents):
@@ -904,7 +905,7 @@ class Kernel(SingletonConfigurable):
                 raise KeyboardInterrupt("Interrupted by user") from None
             except Exception as e:
                 self.log.warning("Invalid Message:", exc_info=True)
-        
+
         try:
             value = py3compat.unicode_to_str(reply['content']['value'])
         except:
